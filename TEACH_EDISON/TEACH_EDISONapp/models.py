@@ -13,9 +13,11 @@ class EmailBackend(object):
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None:
+            print("1111111111111111111111111111111111111111111111111111")
 
             username = kwargs.get(User.USERNAME_FIELD)
         try:
+            print("2222222222222222222222222222222222222222222222222")
             try:
                 user = User.objects.get(
                     email=username
@@ -27,24 +29,30 @@ class EmailBackend(object):
         except User.DoesNotExist:
             # Run the default password hasher once to reduce the timing
             # difference between an existing and a nonexistent user (#20760).
+            print("333333333333333333333333333333333333333333333333333")
             User().set_password(password)
             
         else:
             if user.check_password(password) and self.user_can_authenticate(user):
+                print("44444444444444444444444444444444444444444444444")
                 return user
     def user_can_authenticate(self, user):
         """
         Reject users with is_active=False. Custom user models that don't have
         that attribute are allowed.
         """
+        print("55555555555555555555555555555555555555")
         is_active = getattr(user, 'is_active', None)
         
         return is_active or is_active is None
     def get_user(self, user_id):
         try:
+            print("6666666666666666666666666666666666666666")
             user = User._default_manager.get(pk=user_id)
         except User.DoesNotExist:
+            print("77777777777777777777777777777777777777")
             return None
+        print("8888888888888888888888888888888888888888888888")
         return user if self.user_can_authenticate(user) else None
 # user = authenticate(username='john', password='secret')
 # if user is not None:
@@ -131,14 +139,14 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    phone = models.CharField(max_length=11,blank=True,unique=True)
+    phone = models.CharField(max_length=11,blank=True)
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False) # a admin user; non super-user
     admin = models.BooleanField(default=False) # a superuser
     # notice the absence of a "Password field", that is built in.
 
-    USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ["first_name","last_name","DOB"] # Email & Password are required by default.
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ["phone","first_name","last_name","DOB"] # Email & Password are required by default.
 
     # def get_full_name(self):
     #     # The user is identified by their email address
